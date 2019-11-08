@@ -9,6 +9,8 @@ using namespace std;
 using namespace cv;
 using namespace raspicam;
 
+
+//Image Processing Variables
 Mat frame, Matrix, framePers, frameGray, frameThresh, frameEdge, frameFinal, frameFinalDuplicate;
 Mat ROILane;
 int LeftLanePos, RightLanePos, frameCenter, laneCenter, Result;
@@ -21,6 +23,11 @@ vector<int> histogramLane;
 
 Point2f Source[] = {Point2f(60,150), Point2f(275,150), Point2f(0,210), Point2f(360,210)};
 Point2f Destination[] = {Point2f(60,0), Point2f(300,0), Point2f(60,240), Point2f(300,240)};
+
+//Machine Learning Variables
+CascadeClassifier Stop_Cascade;
+Mat frame_stop, RoI_Stop, gray_Stop;
+vector<Rect> Stop;
 
 void Setup(int argc, char **argv, RaspiCam_Cv &Camera)
 {
@@ -37,7 +44,10 @@ void Capture()
 {
     Camera.grab();
     Camera.retrieve(frame);
-    // cvtColor(frame, frame, COLOR_BGR2RGB);
+    frame_stop = frame.clone();
+    //cvtColor(frame, frame_stop, COLOR_BGR2RGB);
+    //cvtColor(frame, frame, COLOR_BGR2RGB);
+    
 
 }
 
@@ -64,7 +74,7 @@ void Threshold()
     Canny(frameGray,frameEdge, 250, 100, 3, false);
     add(frameThresh, frameEdge, frameFinal);
     cvtColor(frameFinal, frameFinal, COLOR_GRAY2RGB);
-    cvtColor(frameFinal, frameFinalDuplicate, COLOR_RGB2BGR); //userd int histogram function only
+    cvtColor(frameFinal, frameFinalDuplicate, COLOR_RGB2BGR); //used int histogram function only
 }
 
 void Histogram()
@@ -103,6 +113,33 @@ void LaneCenter()
     Result = laneCenter-frameCenter;
 }
 
+void Stop_detection()
+{
+    if ( !Stop_Cascade.load("//home//pi//tcc//stop_cascade.xml"))
+    {
+        printf("Unable to open stop cascade file");
+    }
+    
+    RoI_Stop = frame_stop(Rect(0,0,150,140)); //0,0,360,240
+    cvtColor(RoI_Stop, gray_Stop, COLOR_RGB2GRAY);
+    equalizeHist(gray_Stop, gray_Stop);
+    Stop_Cascade.detectMultiScale(gray_Stop, Stop);
+    
+    for(int i=0; i < Stop.size(); i++)
+    {
+        Point P1(Stop[i].x, Stop[i].y);
+        Point P2(Stop[i].x + Stop[i].width, Stop[i].x + Stop[i].height);
+        
+        rectangle(RoI_Stop, P1, P2, Scalar(0, 0, 255), 2);
+        putText(RoI_Stop, "Stop Sign", P1, FONT_HERSHEY_PLAIN, 1 ,Scalar(0,0,255,255), 2);
+        
+        ss.str("");
+        ss.clear();
+        ss<<"D = "<<P2.x - P1.x<<" (pixels)";
+        putText(RoI_Stop, ss.str(), Point2f(1,130), 0, 1, Scalar(0,0,255), 2);
+    }
+}
+
 int main(int argc, char **argv)
 {
     wiringPiSetup();
@@ -130,6 +167,7 @@ int main(int argc, char **argv)
         Histogram();
         LaneFinder();
         LaneCenter();
+        Stop_detection();
         
         if (Result == 0)
         {
@@ -194,19 +232,24 @@ int main(int argc, char **argv)
         putText(frame, ss.str(), Point2f(1,50), 0,1,Scalar(0,0,255),2);
         
         namedWindow("Original", WINDOW_KEEPRATIO);
-        moveWindow("Original", 0, 100);
+        moveWindow("Original", 0, 0);
         resizeWindow("Original", 640, 480);
         imshow("Original", frame);
 
         namedWindow("Perspective", WINDOW_KEEPRATIO);
-        moveWindow("Perspective", 640, 100);
+        moveWindow("Perspective", 640, 0);
         resizeWindow("Perspective", 640, 480);
         imshow("Perspective", framePers);
         
         namedWindow("Final", WINDOW_KEEPRATIO);
-        moveWindow("Final", 1280, 100);
+        moveWindow("Final", 1280, 0);
         resizeWindow("Final", 640, 480);
         imshow("Final", frameFinal);
+
+        namedWindow("Stop Sign", WINDOW_KEEPRATIO);
+        moveWindow("Stop Sign", 1280, 480);
+        resizeWindow("Stop Sign", 640, 480);
+        imshow("Stop Sign", RoI_Stop);
 
         waitKey(1);
         auto end = std::chrono::system_clock::now();
