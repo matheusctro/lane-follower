@@ -11,7 +11,7 @@ const int D0 = 0;       //Raspberry pin 21    LSB
 const int D1 = 1;       //Raspberry pin 22
 const int D2 = 2;       //Raspberry pin 23
 const int D3 = 3;       //Raspberry pin 24    MSB
-
+  
 int a,b,c,d,data;
 
 
@@ -50,7 +50,7 @@ void Forward()
 
   digitalWrite(HighR, LOW);
   digitalWrite(LowR, HIGH);
-  analogWrite(EnableR,255);
+  analogWrite(EnableR,240);
   
 }
 
@@ -83,11 +83,11 @@ void Left1()
 {
   digitalWrite(HighL, LOW);
   digitalWrite(LowL, HIGH);
-  analogWrite(EnableL,200);
+  analogWrite(EnableL,255);
 
   digitalWrite(HighR, LOW);
   digitalWrite(LowR, HIGH);
-  analogWrite(EnableR,255);
+  analogWrite(EnableR,204);
   
 }
 
@@ -95,11 +95,11 @@ void Left2()
 {
   digitalWrite(HighL, LOW);
   digitalWrite(LowL, HIGH);
-  analogWrite(EnableL,180);
+  analogWrite(EnableL,255);
 
   digitalWrite(HighR, LOW);
   digitalWrite(LowR, HIGH);
-  analogWrite(EnableR,255);
+  analogWrite(EnableR,180);
   
 }
 
@@ -108,11 +108,11 @@ void Left3()
 {
   digitalWrite(HighL, LOW);
   digitalWrite(LowL, HIGH);
-  analogWrite(EnableL,160);
+  analogWrite(EnableL,255);
 
   digitalWrite(HighR, LOW);
   digitalWrite(LowR, HIGH);
-  analogWrite(EnableR,255);
+  analogWrite(EnableR,165);
   
 }
 
@@ -120,21 +120,21 @@ void Right1()
 {
   digitalWrite(HighL, LOW);
   digitalWrite(LowL, HIGH);
-  analogWrite(EnableL,255);
+  analogWrite(EnableL,240);
 
   digitalWrite(HighR, LOW);
   digitalWrite(LowR, HIGH);
-  analogWrite(EnableR,200);  //160  
+  analogWrite(EnableR,255);
 }
 void Right2()
 {
   digitalWrite(HighL, LOW);
   digitalWrite(LowL, HIGH);
-  analogWrite(EnableL,255);
+  analogWrite(EnableL,204);
 
   digitalWrite(HighR, LOW);
   digitalWrite(LowR, HIGH);
-  analogWrite(EnableR,180);   
+  analogWrite(EnableR,255);   
   
 }
 
@@ -142,11 +142,11 @@ void Right3()
 {
   digitalWrite(HighL, LOW);
   digitalWrite(LowL, HIGH);
-  analogWrite(EnableL,255);
+  analogWrite(EnableL,180);
 
   digitalWrite(HighR, LOW);
   digitalWrite(LowR, HIGH);
-  analogWrite(EnableR,160);   
+  analogWrite(EnableR,255);   
   
 }
 
@@ -154,34 +154,7 @@ void Right3()
 
 void loop() 
 {
-    /*
-    int valor_pwm = 0;   //variavel que armazena o valor do PWM (0..255 -> 0%..100% da rotação do motor) 
-    digitalWrite(HighL, LOW);
-    digitalWrite(LowL, HIGH);
-    digitalWrite(HighR, LOW);
-    digitalWrite(LowR, HIGH);
-    //Aumento de velocidade (0%..100%)
-    Serial.println("Aumentando velocidade...");
-    for (valor_pwm = 0; valor_pwm < 256; valor_pwm++)
-    {
-        Serial.println(valor_pwm);
-        analogWrite(EnableL, valor_pwm);
-        analogWrite(EnableR, valor_pwm);
-        delay(100);
-    }
- 
-    //Diminuição de velocidade (100%..0%)
-    Serial.println("Diminuindo velocidade");
-    for (valor_pwm = 255; valor_pwm >= 0; valor_pwm--)
-    {
-        Serial.println(valor_pwm);
-        analogWrite(EnableL, valor_pwm);
-        analogWrite(EnableR, valor_pwm);
-        delay(100);
-    }
-  */
-  Right3();
-  /*
+  //Forward();
   Data();
   if(data==0)
    {
@@ -222,5 +195,4 @@ void loop()
    {
      Stop();
    }
-   */
 }
