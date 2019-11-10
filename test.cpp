@@ -37,7 +37,7 @@ void Setup(int argc, char **argv, RaspiCam_Cv &Camera)
     Camera.set ( CAP_PROP_CONTRAST, ( "-co", argc, argv, 50 ) );
     Camera.set ( CAP_PROP_SATURATION, ( "-sa", argc, argv, 50 ) );
     Camera.set ( CAP_PROP_GAIN, ( "-g", argc, argv, 50 ) );
-    Camera.set ( CAP_PROP_FPS, ( "-fps", argc, argv, 0 ) ); //mudar este valor para conseguir mais frames por segundo
+    Camera.set ( CAP_PROP_FPS, ( "-fps", argc, argv, 0 ) ); //mudar este valor para conseguir mais frames por segundo, mas a imagem escurece
 }
 
 void Capture()
@@ -70,7 +70,12 @@ void Perspective()
 void Threshold()
 {
     cvtColor(framePers, frameGray, COLOR_RGB2GRAY);
-    inRange(frameGray, 50, 255, frameThresh);
+    /*
+     * Parameters of inRange function
+     * Indoor conditions: 50, 255
+     * Outdoor conditions: 200, 255
+     */
+    inRange(frameGray, 200, 255, frameThresh); //Used to detect levels of white
     Canny(frameGray,frameEdge, 250, 100, 3, false);
     add(frameThresh, frameEdge, frameFinal);
     cvtColor(frameFinal, frameFinal, COLOR_GRAY2RGB);
