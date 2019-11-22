@@ -28,10 +28,11 @@ Point2f Destination[] = {Point2f(60,0), Point2f(300,0), Point2f(60,240), Point2f
 CascadeClassifier Stop_Cascade;
 Mat frame_stop, RoI_Stop, gray_Stop;
 vector<Rect> Stop;
+int dist_stop;
 
 void Setup(int argc, char **argv, RaspiCam_Cv &Camera)
 {
-    Camera.set ( CAP_PROP_FRAME_WIDTH, ( "-w", argc, argv, 360 ) );
+    Camera.set ( CAP_PROP_FRAME_WIDTH, ( "-w", argc, argv, 390 ) ); //360
     Camera.set ( CAP_PROP_FRAME_HEIGHT, ( "-h", argc, argv, 240 ) );
     Camera.set ( CAP_PROP_BRIGHTNESS, ( "-br", argc, argv, 50 ) );
     Camera.set ( CAP_PROP_CONTRAST, ( "-co", argc, argv, 50 ) );
@@ -75,7 +76,7 @@ void Threshold()
      * Indoor conditions: 50, 255
      * Outdoor conditions: 200, 255
      */
-    inRange(frameGray, 200, 255, frameThresh); //Used to detect levels of white
+    inRange(frameGray, 50, 255, frameThresh); //Used to detect levels of white
     Canny(frameGray,frameEdge, 250, 100, 3, false);
     add(frameThresh, frameEdge, frameFinal);
     cvtColor(frameFinal, frameFinal, COLOR_GRAY2RGB);
@@ -174,7 +175,7 @@ int main(int argc, char **argv)
         LaneCenter();
         Stop_detection();
         
-        if (Result == 0)
+        if (Result >= -25 && Result <= 25)
         {
             digitalWrite(21, 0);
             digitalWrite(22, 0); //decimal = 0
@@ -182,7 +183,7 @@ int main(int argc, char **argv)
             digitalWrite(24, 0);
             cout<<"Forward"<<endl;
         }
-        else if (Result > 0 && Result < 10)
+        else if (Result > 25 && Result < 35)
         {
             digitalWrite(21, 1);
             digitalWrite(22, 0); //decimal = 1
@@ -190,7 +191,7 @@ int main(int argc, char **argv)
             digitalWrite(24, 0);
             cout<<"Right1"<<endl;
         }
-        else if (Result >= 10 && Result < 20)
+        else if (Result >= 35 && Result < 45)
         {
             digitalWrite(21, 0);
             digitalWrite(22, 1); //decimal = 2
@@ -198,7 +199,7 @@ int main(int argc, char **argv)
             digitalWrite(24, 0);
             cout<<"Right2"<<endl;
         }
-        else if (Result > 20)
+        else if (Result > 45)
         {
             digitalWrite(21, 1);
             digitalWrite(22, 1); //decimal = 3
@@ -206,7 +207,7 @@ int main(int argc, char **argv)
             digitalWrite(24, 0);
             cout<<"Right3"<<endl;
         }
-        else if (Result < 0 && Result > -10)
+        else if (Result < -25 && Result > -35)
         {
             digitalWrite(21, 0);
             digitalWrite(22, 0); //decimal = 4
@@ -214,7 +215,7 @@ int main(int argc, char **argv)
             digitalWrite(24, 0);
             cout<<"Left1"<<endl;
         }
-        else if (Result <= -10 && Result > -20)
+        else if (Result <= -35 && Result > -45)
         {
             digitalWrite(21, 1);
             digitalWrite(22, 0); //decimal = 5
@@ -222,7 +223,7 @@ int main(int argc, char **argv)
             digitalWrite(24, 0);
             cout<<"Left2"<<endl;
         }
-        else if (Result < -20)
+        else if (Result < -45)
         {
             digitalWrite(21, 0);
             digitalWrite(22, 1); //decimal = 6
