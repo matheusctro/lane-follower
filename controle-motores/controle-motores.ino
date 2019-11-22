@@ -17,6 +17,7 @@ int a,b,c,d,data;
 
 void setup() {
     Serial.begin(9600);
+    Serial.println("Carrinho iniciado");
     pinMode(EnableL, OUTPUT);      
     pinMode(HighL, OUTPUT);
     pinMode(LowL, OUTPUT);
@@ -154,45 +155,36 @@ void Right3()
 
 void loop() 
 {
-  //Forward();
+  Stop();
+  delay(2000);
   Data();
-  if(data==0)
-   {
-     Forward();
-   }
-   
-  else if(data==1)
-   {
-     Right1();
-   }
-     
-  else if(data==2)
-   {
-     Right2();
-   }
-     
-  else if(data==3)
-   {
-     Right3();
-   }
-     
-  else if(data==4)
-   {
-     Left1();
-   }
-    
-  else if(data==5)
-   {
-     Left2();
-   }
-    
-  else if(data==6)
-   {
-     Left3();
-   }
-  
-  else if (data>6)
-   {
-     Stop();
-   }
+  Serial.print("Data: ");
+  Serial.println(data);
+  switch(data){
+    case 0:   
+            Forward();
+            break;
+    case 1:
+            Right1();
+            break;
+    case 2:
+            Right2();
+            break;
+    case 3:
+            Right3();
+            break;
+    case 4:
+            Left1();
+            break;
+    case 5:
+            Left2();
+            break;
+    case 6:
+            Left3();
+            break;
+    default:
+            Stop();
+            break;
+  }
+  delay(500);
 }
