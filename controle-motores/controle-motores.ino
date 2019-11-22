@@ -7,12 +7,15 @@ const int EnableR = 5;
 const int HighR = 9;       //RIGHT SIDE MOTOR
 const int LowR = 8;
 
-const int D0 = 0;       //Raspberry pin 21    LSB
-const int D1 = 1;       //Raspberry pin 22
-const int D2 = 2;       //Raspberry pin 23
-const int D3 = 3;       //Raspberry pin 24    MSB
+const int D0 = A0;       //Raspberry pin 21    LSB
+const int D1 = A1;       //Raspberry pin 22
+const int D2 = A2;       //Raspberry pin 23
+const int D3 = A3;       //Raspberry pin 24    MSB
   
-int a,b,c,d,data;
+int a,b,c,d;
+int data = 0;
+int last_data = 3;
+
 
 
 void setup() {
@@ -47,11 +50,11 @@ void Forward()
 {
   digitalWrite(HighL, LOW);
   digitalWrite(LowL, HIGH);
-  analogWrite(EnableL,255);
+  analogWrite(EnableL,200);
 
   digitalWrite(HighR, LOW);
   digitalWrite(LowR, HIGH);
-  analogWrite(EnableR,240);
+  analogWrite(EnableR,200);
   
 }
 
@@ -60,11 +63,11 @@ void Backward()
 {
   digitalWrite(HighL, HIGH);
   digitalWrite(LowL, LOW);
-  analogWrite(EnableL,255);
+  analogWrite(EnableL,200);
 
   digitalWrite(HighR, HIGH);
   digitalWrite(LowR, LOW);
-  analogWrite(EnableR,255);
+  analogWrite(EnableR,200);
   
 }
 
@@ -84,11 +87,11 @@ void Left1()
 {
   digitalWrite(HighL, LOW);
   digitalWrite(LowL, HIGH);
-  analogWrite(EnableL,255);
+  analogWrite(EnableL,200);
 
   digitalWrite(HighR, LOW);
   digitalWrite(LowR, HIGH);
-  analogWrite(EnableR,204);
+  analogWrite(EnableR,180);
   
 }
 
@@ -96,11 +99,11 @@ void Left2()
 {
   digitalWrite(HighL, LOW);
   digitalWrite(LowL, HIGH);
-  analogWrite(EnableL,255);
+  analogWrite(EnableL,200);
 
   digitalWrite(HighR, LOW);
   digitalWrite(LowR, HIGH);
-  analogWrite(EnableR,180);
+  analogWrite(EnableR,170);
   
 }
 
@@ -109,11 +112,11 @@ void Left3()
 {
   digitalWrite(HighL, LOW);
   digitalWrite(LowL, HIGH);
-  analogWrite(EnableL,255);
+  analogWrite(EnableL,200);
 
   digitalWrite(HighR, LOW);
   digitalWrite(LowR, HIGH);
-  analogWrite(EnableR,165);
+  analogWrite(EnableR,160);
   
 }
 
@@ -121,21 +124,21 @@ void Right1()
 {
   digitalWrite(HighL, LOW);
   digitalWrite(LowL, HIGH);
-  analogWrite(EnableL,240);
+  analogWrite(EnableL,180);
 
   digitalWrite(HighR, LOW);
   digitalWrite(LowR, HIGH);
-  analogWrite(EnableR,255);
+  analogWrite(EnableR,200);
 }
 void Right2()
 {
   digitalWrite(HighL, LOW);
   digitalWrite(LowL, HIGH);
-  analogWrite(EnableL,204);
+  analogWrite(EnableL,170);
 
   digitalWrite(HighR, LOW);
   digitalWrite(LowR, HIGH);
-  analogWrite(EnableR,255);   
+  analogWrite(EnableR,200);   
   
 }
 
@@ -143,48 +146,110 @@ void Right3()
 {
   digitalWrite(HighL, LOW);
   digitalWrite(LowL, HIGH);
-  analogWrite(EnableL,180);
+  analogWrite(EnableL,160);
 
   digitalWrite(HighR, LOW);
   digitalWrite(LowR, HIGH);
-  analogWrite(EnableR,255);   
-  
+  analogWrite(EnableR,200);   
 }
 
 
 
 void loop() 
 {
-  Stop();
-  delay(2000);
   Data();
   Serial.print("Data: ");
   Serial.println(data);
   switch(data){
-    case 0:   
-            Forward();
-            break;
+    case 0:
+      Forward();
+      break;
     case 1:
-            Right1();
-            break;
+      Right1();
+      break;
     case 2:
-            Right2();
-            break;
+      Right2();
+      break;
     case 3:
-            Right3();
-            break;
+      Right3();
+      break;
     case 4:
-            Left1();
-            break;
+      Left1();
+      break;
     case 5:
-            Left2();
-            break;
+      Left2();
+      break;
     case 6:
-            Left3();
-            break;
+      Left3();
+      break;
     default:
-            Stop();
-            break;
-  }
-  delay(500);
+      Stop();
+      break;
+    }
+    delay(200);
+    Stop();
+    delay(100);
 }
+
+
+/*
+void loop(){
+  Stop();
+  delay(5000);
+  
+  Forward();
+  delay(2000);
+  Stop();
+  delay(2000);
+  
+  Right1();
+  delay(2000);
+  Stop();
+  delay(2000);
+  
+  Right2();
+  delay(2000);
+  Stop();
+  delay(2000);
+  
+  Right3();
+  delay(2000);
+  Stop();
+  delay(2000);
+  
+  Left1();
+  delay(2000);
+  Stop();
+  delay(2000);
+  
+  Left2();
+  delay(2000);
+  Stop();
+  delay(2000);
+  
+  Left3();
+  delay(2000);
+  Stop();
+}
+*/
+
+/*
+void loop()
+{
+  for(int i = 0; i < 50; i++)
+  {
+    delay(2000);
+    digitalWrite(HighL, LOW);
+    digitalWrite(LowL, HIGH);
+    analogWrite(EnableL,255);
+
+    digitalWrite(HighR, LOW);
+    digitalWrite(LowR, HIGH);
+    analogWrite(EnableR,255);   
+  
+    delay(100);
+    Stop();
+  }
+  
+}
+*/
