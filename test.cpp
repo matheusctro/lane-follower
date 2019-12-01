@@ -25,10 +25,10 @@ Point2f Source[] = {Point2f(60,150), Point2f(275,150), Point2f(0,210), Point2f(3
 Point2f Destination[] = {Point2f(60,0), Point2f(300,0), Point2f(60,240), Point2f(300,240)};
 
 //Machine Learning Variables
-CascadeClassifier Stop_Cascade;
-Mat frame_stop, RoI_Stop, gray_Stop;
-vector<Rect> Stop;
-int dist_stop;
+CascadeClassifier Stop_Cascade, Traffic_Cascade;
+Mat frame_stop, RoI_Stop, gray_Stop, frame_Traffic, RoI_Traffic, gray_Traffic;
+vector<Rect> Stop, Traffic;
+int dist_stop, dist_Traffic;
 
 void Setup(int argc, char **argv, RaspiCam_Cv &Camera)
 {
@@ -46,6 +46,7 @@ void Capture()
     Camera.grab();
     Camera.retrieve(frame);
     frame_stop = frame.clone();
+    //frame_Traffic = frame.clone();
     //cvtColor(frame, frame_stop, COLOR_BGR2RGB);
     //cvtColor(frame, frame, COLOR_BGR2RGB);
     
@@ -76,7 +77,7 @@ void Threshold()
      * Indoor conditions: 50, 255
      * Outdoor conditions: 200, 255
      */
-    inRange(frameGray, 200, 255, frameThresh); //Used to detect levels of white
+    inRange(frameGray, 50, 255, frameThresh); //Used to detect levels of white
     Canny(frameGray,frameEdge, 250, 100, 3, false);
     add(frameThresh, frameEdge, frameFinal);
     cvtColor(frameFinal, frameFinal, COLOR_GRAY2RGB);
@@ -138,11 +139,40 @@ void Stop_detection()
         
         rectangle(RoI_Stop, P1, P2, Scalar(0, 0, 255), 2);
         putText(RoI_Stop, "Stop Sign", P1, FONT_HERSHEY_PLAIN, 1 ,Scalar(0,0,255,255), 2);
+        dist_stop = (-0.324)*(P2.x - P1.x) + 58.88;
         
         ss.str("");
         ss.clear();
-        ss<<"D = "<<P2.x - P1.x<<" (pixels)";
+        ss<<"D = "<<dist_stop<<"cm";
         putText(RoI_Stop, ss.str(), Point2f(1,130), 0, 1, Scalar(0,0,255), 2);
+    }
+}
+
+void Traffic_detection()
+{
+    if ( !Traffic_Cascade.load("//home//pi//tcc//traffic_cascade.xml"))
+    {
+        printf("Unable to open traffic cascade file");
+    }
+    
+    RoI_Traffic = frame_Traffic(Rect(0,0,150,140)); //0,0,360,240
+    cvtColor(RoI_Stop, gray_Traffic, COLOR_RGB2GRAY);
+    equalizeHist(gray_Traffic, gray_Traffic);
+    Traffic_Cascade.detectMultiScale(gray_Traffic, Traffic);
+    
+    for(int i=0; i < Traffic.size(); i++)
+    {
+        Point P1(Traffic[i].x, Traffic[i].y);
+        Point P2(Traffic[i].x + Traffic[i].width, Traffic[i].x + Traffic[i].height);
+        
+        rectangle(RoI_Traffic, P1, P2, Scalar(0, 0, 255), 2);
+        putText(RoI_Stop, "Traffic Light", P1, FONT_HERSHEY_PLAIN, 1 ,Scalar(0,0,255,255), 2);
+        //dist_stop = (-0,324)*(P2.x - P1.x) + 58.88;
+        
+        ss.str("");
+        ss.clear();
+        ss<<"D = "<<P2.x - P1.x<<"cm";
+        putText(RoI_Traffic, ss.str(), Point2f(1,130), 0, 1, Scalar(0,0,255), 2);
     }
 }
 
@@ -174,6 +204,7 @@ int main(int argc, char **argv)
         LaneFinder();
         LaneCenter();
         Stop_detection();
+        //Traffic_detection();
         
         if (Result >= -25 && Result <= 25)
         {
@@ -256,6 +287,11 @@ int main(int argc, char **argv)
         moveWindow("Stop Sign", 1100, 480);
         resizeWindow("Stop Sign", 640, 480);
         imshow("Stop Sign", RoI_Stop);
+        
+        //namedWindow("Traffic", WINDOW_KEEPRATIO);
+        //moveWindow("Traffic", 640, 480);
+        //resizeWindow("Traffic", 640, 480);
+        //imshow("Traffic", RoI_Traffic);
 
         waitKey(1);
         auto end = std::chrono::system_clock::now();
