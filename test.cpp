@@ -76,7 +76,7 @@ void Threshold()
      * Indoor conditions: 50, 255
      * Outdoor conditions: 200, 255
      */
-    inRange(frameGray, 50, 255, frameThresh); //Used to detect levels of white
+    inRange(frameGray, 200, 255, frameThresh); //Used to detect levels of white
     Canny(frameGray,frameEdge, 250, 100, 3, false);
     add(frameThresh, frameEdge, frameFinal);
     cvtColor(frameFinal, frameFinal, COLOR_GRAY2RGB);
@@ -248,12 +248,12 @@ int main(int argc, char **argv)
         imshow("Perspective", framePers);
         
         namedWindow("Final", WINDOW_KEEPRATIO);
-        moveWindow("Final", 1280, 0);
+        moveWindow("Final", 1100, 0); //1280
         resizeWindow("Final", 640, 480);
         imshow("Final", frameFinal);
 
         namedWindow("Stop Sign", WINDOW_KEEPRATIO);
-        moveWindow("Stop Sign", 1280, 480);
+        moveWindow("Stop Sign", 1100, 480);
         resizeWindow("Stop Sign", 640, 480);
         imshow("Stop Sign", RoI_Stop);
 
