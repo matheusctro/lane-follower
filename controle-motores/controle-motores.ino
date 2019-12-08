@@ -182,6 +182,13 @@ void loop()
     case 6:
       Left3();
       break;
+    case 7:
+      analogWrite(EnableR,0);
+      analogWrite(EnableL,0);
+      delay(5000);
+      analogWrite(EnableR,200);
+      analogWrite(EnableL,200);
+      delay(500);
     default:
       Stop();
       break;
